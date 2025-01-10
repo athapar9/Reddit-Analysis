@@ -90,11 +90,12 @@ def analyze_data(start, end):
 def create_results(timeframes):
     with open('test_results_week_1.md', 'w+') as results_file:
         results_file.write('# Week 1 Results\n')
-        results_file.write(f"## {timeframe['name']}\n")
-        results_file.write(f"- **Timeframe:** {timeframe['timeframe']}\n")
-        results_file.write(f"- **Execution Time:** {timeframe['execution_time']} ms\n")
-        results_file.write(f"- **Most Placed Color:** {timeframe['most_color']}\n")
-        results_file.write(f"- **Most Placed Pixel Location:** {timeframe['most_pixel']}\n\n")
+        for timeframe in timeframes:
+            results_file.write(f"## {timeframe['name']}\n")
+            results_file.write(f"- **Timeframe:** {timeframe['timeframe']}\n")
+            results_file.write(f"- **Execution Time:** {timeframe['execution_time']} ms\n")
+            results_file.write(f"- **Most Placed Color:** {timeframe['most_color']}\n")
+            results_file.write(f"- **Most Placed Pixel Location:** {timeframe['most_pixel']}\n\n")
 
 
 def main():

@@ -90,12 +90,11 @@ def analyze_data(start, end):
 def create_results(timeframes):
     with open('test_results_week_1.md', 'w+') as results_file:
         results_file.write('# Week 1 Results\n')
-        for timeframe in timeframes:
-            results_file.write(f"## {timeframe['name']}\n")
-            results_file.write(f"- **Timeframe:** {timeframe['timeframe']}\n")
-            results_file.write(f"- **Execution Time:** {timeframe['execution_time']} ms\n")
-            results_file.write(f"- **Most Placed Color:** {timeframe['most_color']}\n")
-            results_file.write(f"- **Most Placed Pixel Location:** {timeframe['most_pixel']}\n\n")
+        results_file.write(f"## {timeframe['name']}\n")
+        results_file.write(f"- **Timeframe:** {timeframe['timeframe']}\n")
+        results_file.write(f"- **Execution Time:** {timeframe['execution_time']} ms\n")
+        results_file.write(f"- **Most Placed Color:** {timeframe['most_color']}\n")
+        results_file.write(f"- **Most Placed Pixel Location:** {timeframe['most_pixel']}\n\n")
 
 
 def main():
@@ -107,7 +106,6 @@ def main():
     end_time = f"{sys.argv[3]} {sys.argv[4]}"
     start, end = validate_args(start_time, end_time)
 
-    # List of timeframes you want to analyze
     timeframes = [
         {"name": "1-Hour Timeframe", "start": start, "end": start + timedelta(hours=1)},
         {"name": "3-Hour Timeframe", "start": start, "end": start + timedelta(hours=3)},
@@ -123,7 +121,7 @@ def main():
 
         end_perf = time.perf_counter_ns()
 
-        execution_time = (end_perf - start_perf) // 1_000_000  # milliseconds
+        execution_time = (end_perf - start_perf) // 1_000_000
 
         results.append({
             "name": timeframe["name"],

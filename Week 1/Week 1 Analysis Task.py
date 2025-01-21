@@ -72,7 +72,7 @@ def analyze_data(start, end):
     formats = ["%Y-%m-%d %H:%M:%S.%f UTC", "%Y-%m-%d %H:%M:%S UTC"]
 
     with open("2022_place_canvas_history.csv", "r") as file:
-        csv_reader = csv.DictReader(file)
+        csv_reader = csv.reader(file)
         for row in csv_reader:
             timestamp = parse_timestamp(row["timestamp"], formats)
             if not timestamp or not (start <= timestamp < end):

@@ -94,10 +94,6 @@ def pixel_placement_percentiles(final_parquet, start, end):
     return percentiles
 
 def calculate_average_session_length(final_parquet, start, end):
-    # Define a session as a user’s activity within a 15-minute window of inactivity. 
-    # Return the average session length in seconds during the specified timeframe.
-    # Only include cases where a user had more than one pixel placement during the time period in the average.
-
     # first separate each user's activity 
     # then define the 15-minute window of inacitivity
     # then create an id for each session of inactivity

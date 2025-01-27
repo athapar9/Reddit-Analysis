@@ -19,71 +19,6 @@ def validate_args(start_time, end_time):
         print(f"Error: {e}")
         sys.exit(1)
 
-def preprocess(original_csv, preprocessed_data):
-    pl.scan_csv(original_csv).sink_parquet(preprocessed_data, compression="zstd", compression_level=22)
-    split_coordinates_parquet = split_coordinates(preprocessed_data)
-    user_id_parquet = convert_user_ids(split_coordinates_parquet)
-    final_parquet = cast_timestamp(user_id_parquet)
-
-def split_coordinates(preprocessed_data):
-    duckdb.query('PRAGMA max_temp_directory_size="100GiB";')
-
-    query = f"""
-    COPY (
-        SELECT 
-            timestamp, 
-            user_id, 
-            pixel_color,
-            CAST(SPLIT_PART(coordinate, ',', 1) AS INT) AS x, 
-            CAST(SPLIT_PART(coordinate, ',', 2) AS INT) AS y
-        FROM {preprocessed_data}
-    ) TO 'split_coordinates.parquet' 
-    (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 22);
-    """
-
-    duckdb.query(query)
-    os.remove(preprocessed_data)
-    print(f"Compressed coordinates saved to split_coordinates.parquet")
-    return 'split_coordinates.parquet'
-
-def convert_user_ids(split_coordinates_parquet):
-    duckdb.query('PRAGMA max_temp_directory_size="100GiB";')
-    query = f"""
-    COPY (
-        SELECT 
-            timestamp, 
-            pixel_color,
-            x,
-            y,
-            hash(user_id) AS user_id_hashed
-        FROM {split_coordinates_parquet}
-    ) TO 'user_ids.parquet' 
-    (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 22);
-    """
-    duckdb.query(query)
-    os.remove(split_coordinates_parquet)
-    print(f"User ID mapping saved to user_ids.parquet")
-    return 'user_ids.parquet'
-
-def cast_timestamp(user_ids_parquet):
-    duckdb.query('PRAGMA max_temp_directory_size="100GiB";')
-    query = f"""
-    COPY (
-        SELECT 
-            CAST(timestamp AS TIMESTAMP) AS timestamp, 
-            user_id_hashed, 
-            pixel_color,
-            x,
-            y
-        FROM {user_ids_parquet}
-    ) TO 'final.parquet' 
-    (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 22);
-    """
-    duckdb.query(query)
-    os.remove(user_ids_parquet)
-    print(f"Timestamps have been cast and saved to final.parquet")
-    return 'final.parquet'
-
 def rank_colors_by_distinct_users(final_parquet, start, end):
     color_mapping = {
         "#FFFFFF": "White",
@@ -222,9 +157,6 @@ def main():
     start = sys.argv[1] + " " + sys.argv[2] + ":00"
     end = sys.argv[3] + " " + sys.argv[4] + ":00"
 
-    original_csv = "../2022_place_canvas_history.csv"
-    preprocessed_data_path = "preprocessed_place.parquet"
-    # preprocess(original_csv, preprocessed_data_path)
 
     start_perf = time.perf_counter_ns()
     rank_colors_by_distinct_users_result = rank_colors_by_distinct_users('final.parquet', start, end)
@@ -248,7 +180,6 @@ def main():
     print("### Count of First-Time Users")
     print("- **Output:**", count_first_time_users_result, "users")
     print("### Runtime", runtime,  "ms")
-
 
 if __name__ == "__main__":
     main()

@@ -110,13 +110,13 @@ def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
-def regenerate_image(final_parquet, center_x, center_y, radius=50):
+def regenerate_image(final_parquet, pixel_x, pixel_y, radius=50):
     
     query = f"""
     SELECT x, y, timestamp, pixel_color
     FROM read_parquet('{final_parquet}')
-    WHERE x >= {center_x - radius} AND x <= {center_x + radius}
-    AND y >= {center_y - radius} AND y <= {center_y + radius}
+    WHERE x >= {pixel_x - radius} AND x <= {pixel_x + radius}
+    AND y >= {pixel_y - radius} AND y <= {pixel_y + radius}
     AND timestamp >= '2022-04-01 00:00:00' AND timestamp < '2022-04-03 24:00:00'
     """
     
@@ -128,9 +128,9 @@ def regenerate_image(final_parquet, center_x, center_y, radius=50):
     for _, row in pixel_data.iterrows():
         x, y, hex_color = row['x'], row['y'], row['pixel_color']
         rgb_color = hex_to_rgb(hex_color)
-        image.putpixel((x - (center_x - radius), y - (center_y - radius)), rgb_color)
+        image.putpixel((x - (pixel_x - radius), y - (pixel_y - radius)), rgb_color)
 
-    image.save(f"regenerated_image_{center_x}_{center_y}.png")
+    image.save(f"{pixel_x},{pixel_y}.png")
     image.show()
 
 def main():

@@ -97,7 +97,7 @@ def calculate_average_session_length(final_parquet, start, end):
     # first separate each user's activity 
     # then define the 15-minute window of inacitivity
     # then create an id for each session of inactivity
-    # calculate duration of sessions (exclude one piexel activity)
+    # calculate duration of sessions (exclude one pixel activity)
     # average the session length 
     
     query = f"""

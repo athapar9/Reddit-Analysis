@@ -69,10 +69,14 @@ def regenerate_canvas(df_positions, canvas_size):
     image.show()
     image.save("most_active_users_canvas.png")
 
-final_parquet = "final.parquet"
-df_top_users = get_top_users(final_parquet, limit=10000)
-top_user_ids = df_top_users['user_id_hashed'].tolist()
-df_positions = get_user_pixel_positions(final_parquet, top_user_ids)
-regenerate_image(final_parquet, 929, 1858)
-regenerate_image(final_parquet, 1647, 244)
-regenerate_canvas(df_positions, canvas_size=(2000, 2000))  
+def main():
+    final_parquet = "final.parquet"
+    df_top_users = get_top_users(final_parquet, limit=50)
+    top_user_ids = df_top_users['user_id_hashed'].tolist()
+    df_positions = get_user_pixel_positions(final_parquet, top_user_ids)
+    regenerate_image(final_parquet, 929, 1858)
+    regenerate_image(final_parquet, 1647, 244)
+    regenerate_canvas(df_positions, canvas_size=(2000, 2000))  
+
+if __name__ == "__main__":
+    main()

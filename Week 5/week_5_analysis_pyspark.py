@@ -15,12 +15,10 @@ spark = (
 df = spark.read.parquet("final.parquet")
 
 def hex_to_rgb(hex_color):
-    """Convert hex color to RGB."""
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
 def top_users(df, limit=50):
-    """Get the top users who placed the most pixels."""
     df_users = (
         df.groupBy("user_id_hashed")
         .agg(count("*").alias("pixel_count"))
@@ -31,7 +29,6 @@ def top_users(df, limit=50):
     return df_users.toPandas()
 
 def user_pixel_positions(df, top_user_ids):
-    """Get the pixel positions of the top users."""
     df_positions = (
         df.filter(col("user_id_hashed").isin(top_user_ids))
         .select("x", "y", "user_id_hashed", "pixel_color", "timestamp")
